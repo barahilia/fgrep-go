@@ -2,7 +2,7 @@ package main
 
 import "testing"
 
-func compare(a, b []string) bool {
+func compare(a, b []int) bool {
 	if len(a) != len(b) {
 		return false
 	}
@@ -16,33 +16,39 @@ func compare(a, b []string) bool {
 	return true
 }
 
-func check(
+func verify(
 	t *testing.T,
 	words []string,
-	expected []string,
+	expected []int,
 ) {
-	text := "abcde"
+	text := "abxabcdefab"
 	res := Search(text, words...)
 
 	if !compare(res, expected) {
 		t.Errorf(
-			"Search(%s, %s) returned %s expected %s",
+			"Search(%s, %s) returned %d expected %d",
 			text, words, res, expected,
 		)
 	}
 }
 
-func TestInterface(t *testing.T) {
-	check(t, []string{"a", "b", "c"}, []string{"a", "b", "c"})
+
+func TestSearchSinglePosition(t *testing.T) {
+	verify(t, []string{"c"}, []int{5})
 }
 
-func TestEmptyWords(t *testing.T) {
-	check(t, []string{}, []string{})
+func TestSearchSingleWord(t *testing.T) {
+	verify(t, []string{"abc"}, []int{3})
 }
 
-func TestSingleWord(t *testing.T) {
-	check(t, []string{"a"}, []string{"a"})
-	check(t, []string{"cd"}, []string{"cd"})
-	check(t, []string{"x"}, []string{})
-	check(t, []string{"abd"}, []string{})
+func TestSearchManyWords(t *testing.T) {
+	verify(t, []string{"aac", "ac", "abc", "bca"}, []int{3})
+}
+
+func TestSearchManyMatches(t *testing.T) {
+	verify(t, []string{"ab"}, []int{0, 3, 9})
+
+	verify(t, []string{"abc", "fab"}, []int{3, 8})
+
+	verify(t, []string{"ab", "cde"}, []int{0, 3, 5, 9})
 }

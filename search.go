@@ -1,26 +1,63 @@
 package main
 
 import "fmt"
-import "strings"
 
-// Search words in text with Aho-Corasick
-func Search(text string, words ...string) []string {
-	if len(words) == 0 {
-		return []string{}
+// Node of Trie data structure
+type Node struct {
+	children map[rune]*Node
+}
+
+func initNode() *Node {
+	return &Node {
+		children: make(map[rune]*Node),
 	}
+}
 
-	if len(words) == 1 {
-		word := words[0]
+// BuildTrie builds a Trie data structure
+func BuildTrie(words ...string) *Node {
+	root := initNode()
 
-		if strings.Contains(text, word) {
-			return []string{word}
+	for _, word := range words {
+		node := root
+
+		for _, char := range word {
+			child, present := node.children[char]
+
+			if !present {
+				child = initNode()
+				node.children[char] = child
+			}
+
+			node = child
 		}
-
-		return []string{}
 	}
 
-	res := []string {"a", "b", "c"}
-	return res
+	return root
+}
+
+// Search words positions in text with Aho-Corasick
+func Search(text string, words ...string) []int {
+	trie := BuildTrie(words...)
+	matches := []int{}
+
+	depth, node := 0, trie
+
+	for position, char := range text {
+		child, present := node.children[char]
+
+		if present {
+			if len(child.children) == 0 {
+				matches = append(matches, position - depth)
+				depth, node = 0, trie
+			} else {
+				depth, node = depth + 1, child
+			}
+		} else {
+			depth, node = 0, trie
+		}
+	}
+
+	return matches
 }
 
 func main() {
