@@ -52,3 +52,9 @@ func TestSearchManyMatches(t *testing.T) {
 
 	verify(t, []string{"ab", "cde"}, []int{0, 3, 5, 9})
 }
+
+func TestPrefixWord(t *testing.T) {
+	verify(t, []string{"ab", "abcd"}, []int{0, 3, 9})
+
+	verify(t, []string{"abcd", "ab"}, []int{0, 3, 9})
+}

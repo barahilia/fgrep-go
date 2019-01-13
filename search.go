@@ -1,10 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"sort"
+)
 
 // Node of Trie data structure
 type Node struct {
-	children map[rune]*Node
+	children     map[rune]*Node
+	inDictionary bool
 }
 
 func initNode() *Node {
@@ -30,9 +34,29 @@ func BuildTrie(words ...string) *Node {
 
 			node = child
 		}
+
+		node.inDictionary = true
 	}
 
 	return root
+}
+
+func sortedUnique(arr []int) []int {
+	set := make(map[int]struct{})
+	unique := []int{}
+
+	for _, i := range arr {
+		_, present := set[i]
+
+		if !present {
+			set[i] = struct{}{}
+			unique = append(unique, i)
+		}
+	}
+
+	sort.Ints(unique)
+
+	return unique
 }
 
 // Search words positions in text with Aho-Corasick
@@ -46,8 +70,11 @@ func Search(text string, words ...string) []int {
 		child, present := node.children[char]
 
 		if present {
-			if len(child.children) == 0 {
+			if child.inDictionary {
 				matches = append(matches, position - depth)
+			}
+
+			if len(child.children) == 0 {
 				depth, node = 0, trie
 			} else {
 				depth, node = depth + 1, child
@@ -57,7 +84,7 @@ func Search(text string, words ...string) []int {
 		}
 	}
 
-	return matches
+	return sortedUnique(matches)
 }
 
 func main() {
