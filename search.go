@@ -7,8 +7,9 @@ import (
 
 // Node of Trie data structure
 type Node struct {
-	children     map[rune]*Node
+	children map[rune]*Node
 	inDictionary bool
+	suffix *Node
 }
 
 func initNode() *Node {
@@ -39,6 +40,32 @@ func BuildTrie(words ...string) *Node {
 	}
 
 	return root
+}
+
+func addSuffixesInside(trie *Node, current *Node) {
+	for char, child := range current.children {
+		suffix, present := current.suffix.children[char]
+
+		if present {
+			child.suffix = suffix
+		} else {
+			child.suffix = trie
+		}
+
+		addSuffixesInside(trie, child)
+	}
+}
+
+
+// AddSuffixes pointer to the longest strict suffix branch from every node
+func AddSuffixes(trie *Node) {
+	for _, child := range trie.children {
+		child.suffix = trie
+	}
+
+	for _, child := range trie.children {
+		addSuffixesInside(trie, child)
+	}
 }
 
 func sortedUnique(arr []int) []int {

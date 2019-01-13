@@ -85,3 +85,37 @@ func TestWikipediaTrie(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestSuffixTwoLetters(t *testing.T) {
+	trie := BuildTrie("ab", "b")
+
+	AddSuffixes(trie)
+
+	bNode := trie.children['b']
+	aNode := trie.children['a']
+	abNode := aNode.children['b']
+
+	correct := (
+		aNode.suffix == trie &&
+		bNode.suffix == trie &&
+		abNode.suffix == bNode)
+
+	if !correct {
+		t.Fail()
+	}
+}
+
+func TestSuffixDeep(t *testing.T) {
+	trie := BuildTrie("abcd", "xyzabc", "abx")
+
+	AddSuffixes(trie)
+
+	abcNode := trie.children['a'].children['b'].children['c']
+
+	xyzNode := trie.children['x'].children['y'].children['z']
+	deepNode := xyzNode.children['a'].children['b'].children['c']
+
+	if deepNode.suffix != abcNode {
+		t.Fail()
+	}
+}
