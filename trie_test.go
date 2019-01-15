@@ -119,3 +119,103 @@ func TestSuffixDeep(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func getNode(trie *Node, s string) *Node {
+	node := trie
+
+	for _, char := range s {
+		node = node.children[char]
+	}
+
+	return node
+}
+
+func TestWikipediaSuffix(t *testing.T) {
+	// From https://en.wikipedia.org/wiki/Aho%E2%80%93Corasick_algorithm
+
+	trie := BuildTrie("a", "ab", "bab", "bc", "bca", "c", "caa")
+
+	AddSuffixes(trie)
+
+	verifySuffix := func (s string, suffix string) {
+		node := getNode(trie, s)
+		suffixNode := getNode(trie, suffix)
+
+		if node.suffix != suffixNode {
+			t.Errorf("Suffix of '%s' is not '%s'", s, suffix)
+		}
+	}
+
+	if trie.suffix != nil {
+		t.Error("Root suffix is not nil")
+	}
+
+	verifySuffix("a", "")
+	verifySuffix("ab", "b")
+	verifySuffix("b", "")
+	verifySuffix("ba", "a")
+	verifySuffix("bab", "ab")
+	verifySuffix("bc", "c")
+	verifySuffix("bca", "ca")
+	verifySuffix("c", "")
+	verifySuffix("ca", "a")
+	verifySuffix("caa", "a")
+}
+
+func TestDictionarySuffix(t *testing.T) {
+	trie := BuildTrie("ab", "b")
+
+	AddSuffixes(trie)
+	AddDictionarySuffixes(trie)
+
+	bNode := trie.children['b']
+	aNode := trie.children['a']
+	abNode := aNode.children['b']
+
+	correct := (
+		aNode.dictionarySuffix == nil &&
+		bNode.dictionarySuffix == nil &&
+		abNode.dictionarySuffix == bNode)
+
+	if !correct {
+		t.Fail()
+	}
+}
+
+func TestWikipediaDictionarySuffix(t *testing.T) {
+	// From https://en.wikipedia.org/wiki/Aho%E2%80%93Corasick_algorithm
+
+	trie := BuildTrie("a", "ab", "bab", "bc", "bca", "c", "caa")
+
+	AddSuffixes(trie)
+	AddDictionarySuffixes(trie)
+
+	verifyEmpty := func (s string) {
+		node := getNode(trie, s)
+
+		if node.dictionarySuffix != nil {
+			t.Errorf("Dictionary suffix of %s is not empty", s)
+		}
+	}
+
+	verifyDictionarySuffix := func (s string, suffix string) {
+		node := getNode(trie, s)
+		suffixNode := getNode(trie, suffix)
+
+		if node.dictionarySuffix != suffixNode {
+			t.Errorf("Dictionary suffix of %s is not %s", s, suffix)
+		}
+	}
+
+	verifyEmpty("")
+	verifyEmpty("a")
+	verifyEmpty("ab")
+	verifyEmpty("b")
+	verifyDictionarySuffix("ba", "a")
+	verifyDictionarySuffix("bab", "ab")
+	verifyDictionarySuffix("bc", "c")
+	verifyDictionarySuffix("bca", "a")
+	verifyEmpty("c")
+	verifyDictionarySuffix("ca", "a")
+	verifyDictionarySuffix("caa", "a")
+}

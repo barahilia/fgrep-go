@@ -10,6 +10,7 @@ type Node struct {
 	children map[rune]*Node
 	inDictionary bool
 	suffix *Node
+	dictionarySuffix *Node
 }
 
 func initNode() *Node {
@@ -49,7 +50,13 @@ func addSuffixesInside(trie *Node, current *Node) {
 		if present {
 			child.suffix = suffix
 		} else {
-			child.suffix = trie
+			suffix, present := trie.children[char]
+
+			if present {
+				child.suffix = suffix
+			} else {
+				child.suffix = trie
+			}
 		}
 
 		addSuffixesInside(trie, child)
@@ -65,6 +72,30 @@ func AddSuffixes(trie *Node) {
 
 	for _, child := range trie.children {
 		addSuffixesInside(trie, child)
+	}
+}
+
+func addDictionarySuffixesInside(current *Node) {
+	for _, child := range current.children {
+		next := child.suffix
+
+		for next != nil {
+			if next.inDictionary {
+				child.dictionarySuffix = next
+				break
+			}
+			next = next.suffix
+		}
+
+		addDictionarySuffixesInside(child)
+	}
+}
+
+// AddDictionarySuffixes pointer to the largest suffix in dictionary
+func AddDictionarySuffixes(trie *Node) {
+	for _, child := range trie.children {
+		child.dictionarySuffix = nil
+		addDictionarySuffixesInside(child)
 	}
 }
 
