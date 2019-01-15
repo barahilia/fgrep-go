@@ -11,6 +11,7 @@ type Node struct {
 	inDictionary bool
 	suffix *Node
 	dictionarySuffix *Node
+	depth int
 }
 
 func initNode() *Node {
@@ -26,11 +27,12 @@ func BuildTrie(words ...string) *Node {
 	for _, word := range words {
 		node := root
 
-		for _, char := range word {
+		for i, char := range word {
 			child, present := node.children[char]
 
 			if !present {
 				child = initNode()
+				child.depth = i + 1
 				node.children[char] = child
 			}
 
@@ -120,25 +122,35 @@ func sortedUnique(arr []int) []int {
 // Search words positions in text with Aho-Corasick
 func Search(text string, words ...string) []int {
 	trie := BuildTrie(words...)
-	matches := []int{}
+	AddSuffixes(trie)
+	AddDictionarySuffixes(trie)
 
-	depth, node := 0, trie
+	matches := []int{}
+	node := trie
 
 	for position, char := range text {
 		child, present := node.children[char]
 
 		if present {
+			// Current node
 			if child.inDictionary {
-				matches = append(matches, position - depth)
+				matches = append(matches, position - child.depth + 1)
 			}
 
+			// Dictionary suffixes
+			for suffix := child.dictionarySuffix; suffix != nil; {
+				matches = append(matches, position - suffix.depth + 1)
+				suffix = suffix.dictionarySuffix
+			}
+
+			// Prepare for the next step
 			if len(child.children) == 0 {
-				depth, node = 0, trie
+				node = trie
 			} else {
-				depth, node = depth + 1, child
+				node = child
 			}
 		} else {
-			depth, node = 0, trie
+			node = trie
 		}
 	}
 

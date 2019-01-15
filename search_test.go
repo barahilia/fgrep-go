@@ -58,3 +58,19 @@ func TestPrefixWord(t *testing.T) {
 
 	verify(t, []string{"abcd", "ab"}, []int{0, 3, 9})
 }
+
+func TestPrefixTwice(t *testing.T) {
+	verify(t, []string{"ab", "abc", "abcd"}, []int{0, 3, 9})
+
+	verify(t, []string{"abcd", "abc", "ab"}, []int{0, 3, 9})
+}
+
+func TestSuffixWord(t *testing.T) {
+	verify(t, []string{"ab", "b"}, []int{0, 1, 3, 4, 9, 10})
+
+	verify(t, []string{"abx", "bx"}, []int{0, 1})
+}
+
+func TestSuffixTwice(t *testing.T) {
+	verify(t, []string{"abx", "bx", "x"}, []int{0, 1, 2})
+}
