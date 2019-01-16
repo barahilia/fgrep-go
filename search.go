@@ -119,6 +119,27 @@ func sortedUnique(arr []int) []int {
 	return unique
 }
 
+func nextNode(node *Node, char rune) *Node {
+	child, present := node.children[char]
+
+	if present {
+		return child
+	}
+
+	if node.suffix == nil {
+		return nil
+	}
+
+	node = node.suffix
+	child, present = node.children[char]
+
+	if present {
+		return child
+	}
+
+	return nil
+}
+
 // Search words positions in text with Aho-Corasick
 func Search(text string, words ...string) []int {
 	trie := BuildTrie(words...)
@@ -129,28 +150,22 @@ func Search(text string, words ...string) []int {
 	node := trie
 
 	for position, char := range text {
-		child, present := node.children[char]
+		node = nextNode(node, char)
 
-		if present {
-			// Current node
-			if child.inDictionary {
-				matches = append(matches, position - child.depth + 1)
-			}
-
-			// Dictionary suffixes
-			for suffix := child.dictionarySuffix; suffix != nil; {
-				matches = append(matches, position - suffix.depth + 1)
-				suffix = suffix.dictionarySuffix
-			}
-
-			// Prepare for the next step
-			if len(child.children) == 0 {
-				node = trie
-			} else {
-				node = child
-			}
-		} else {
+		if node == nil {
 			node = trie
+			continue
+		}
+
+		// Current node
+		if node.inDictionary {
+			matches = append(matches, position - node.depth + 1)
+		}
+
+		// Dictionary suffixes
+		for suffix := node.dictionarySuffix; suffix != nil; {
+			matches = append(matches, position - suffix.depth + 1)
+			suffix = suffix.dictionarySuffix
 		}
 	}
 

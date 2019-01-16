@@ -16,11 +16,10 @@ func compare(a, b []int) bool {
 	return true
 }
 
-func verify(
-	t *testing.T,
-	words []string,
-	expected []int,
-) {
+// Text and indexes
+// a b x a b c d e f a b
+// 0 1 2 3 4 5 6 7 8 9 0
+func verify(t *testing.T, words []string, expected []int) {
 	text := "abxabcdefab"
 	res := Search(text, words...)
 
@@ -73,4 +72,8 @@ func TestSuffixWord(t *testing.T) {
 
 func TestSuffixTwice(t *testing.T) {
 	verify(t, []string{"abx", "bx", "x"}, []int{0, 1, 2})
+}
+
+func TestMoveToSuffix(t *testing.T) {
+	verify(t, []string{"abxb", "bxa"}, []int{1})
 }
