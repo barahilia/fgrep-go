@@ -101,6 +101,16 @@ func AddDictionarySuffixes(trie *Node) {
 	}
 }
 
+// Compile words into a Aho-Corasick trie with suffixes links
+func compile(words ...string) *Node {
+	trie := BuildTrie(words...)
+
+	AddSuffixes(trie)
+	AddDictionarySuffixes(trie)
+
+	return trie
+}
+
 func sortedUnique(arr []int) []int {
 	set := make(map[int]struct{})
 	unique := []int{}
@@ -137,9 +147,7 @@ func nextNode(node *Node, char rune) *Node {
 
 // Search words positions in text with Aho-Corasick
 func Search(text string, words ...string) []int {
-	trie := BuildTrie(words...)
-	AddSuffixes(trie)
-	AddDictionarySuffixes(trie)
+	trie := compile(words...)
 
 	matches := []int{}
 	node := trie

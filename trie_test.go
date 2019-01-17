@@ -88,7 +88,6 @@ func TestWikipediaTrie(t *testing.T) {
 
 func TestSuffixTwoLetters(t *testing.T) {
 	trie := BuildTrie("ab", "b")
-
 	AddSuffixes(trie)
 
 	bNode := trie.children['b']
@@ -107,7 +106,6 @@ func TestSuffixTwoLetters(t *testing.T) {
 
 func TestSuffixDeep(t *testing.T) {
 	trie := BuildTrie("abcd", "xyzabc", "abx")
-
 	AddSuffixes(trie)
 
 	abcNode := trie.children['a'].children['b'].children['c']
@@ -134,7 +132,6 @@ func TestWikipediaSuffix(t *testing.T) {
 	// From https://en.wikipedia.org/wiki/Aho%E2%80%93Corasick_algorithm
 
 	trie := BuildTrie("a", "ab", "bab", "bc", "bca", "c", "caa")
-
 	AddSuffixes(trie)
 
 	verifySuffix := func (s string, suffix string) {
@@ -163,10 +160,7 @@ func TestWikipediaSuffix(t *testing.T) {
 }
 
 func TestDictionarySuffix(t *testing.T) {
-	trie := BuildTrie("ab", "b")
-
-	AddSuffixes(trie)
-	AddDictionarySuffixes(trie)
+	trie := compile("ab", "b")
 
 	bNode := trie.children['b']
 	aNode := trie.children['a']
@@ -185,10 +179,7 @@ func TestDictionarySuffix(t *testing.T) {
 func TestWikipediaDictionarySuffix(t *testing.T) {
 	// From https://en.wikipedia.org/wiki/Aho%E2%80%93Corasick_algorithm
 
-	trie := BuildTrie("a", "ab", "bab", "bc", "bca", "c", "caa")
-
-	AddSuffixes(trie)
-	AddDictionarySuffixes(trie)
+	trie := compile("a", "ab", "bab", "bc", "bca", "c", "caa")
 
 	verifyEmpty := func (s string) {
 		node := getNode(trie, s)
