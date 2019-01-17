@@ -11,15 +11,16 @@ type Node struct {
 	depth int
 }
 
-func initNode() *Node {
+func newNode(depth int) *Node {
 	return &Node {
 		children: make(map[rune]*Node),
+		depth: depth,
 	}
 }
 
 // BuildTrie builds a Trie data structure
 func buildTrie(words ...string) *Node {
-	root := initNode()
+	root := newNode(0)
 
 	for _, word := range words {
 		node := root
@@ -28,8 +29,7 @@ func buildTrie(words ...string) *Node {
 			child, present := node.children[char]
 
 			if !present {
-				child = initNode()
-				child.depth = i + 1
+				child = newNode(i + 1)
 				node.children[char] = child
 			}
 
