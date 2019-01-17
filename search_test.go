@@ -77,3 +77,7 @@ func TestSuffixTwice(t *testing.T) {
 func TestMoveToSuffix(t *testing.T) {
 	verify(t, []string{"abxb", "bxa"}, []int{1})
 }
+
+func TestMoveToSuffixTwice(t *testing.T) {
+	verify(t, []string{"abxb", "bxb", "xa"}, []int{2})
+}

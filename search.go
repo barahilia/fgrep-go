@@ -120,24 +120,19 @@ func sortedUnique(arr []int) []int {
 }
 
 func nextNode(node *Node, char rune) *Node {
-	child, present := node.children[char]
+	for {
+		child, present := node.children[char]
 
-	if present {
-		return child
+		if present {
+			return child
+		}
+
+		if node.suffix == nil {
+			return nil
+		}
+
+		node = node.suffix
 	}
-
-	if node.suffix == nil {
-		return nil
-	}
-
-	node = node.suffix
-	child, present = node.children[char]
-
-	if present {
-		return child
-	}
-
-	return nil
 }
 
 // Search words positions in text with Aho-Corasick
