@@ -1,9 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"sort"
-)
+import "fmt"
 
 // Node of Trie data structure
 type Node struct {
@@ -109,24 +106,6 @@ func compile(words ...string) *Node {
 	addDictionarySuffixes(trie)
 
 	return trie
-}
-
-func sortedUnique(arr []int) []int {
-	set := make(map[int]struct{})
-	unique := []int{}
-
-	for _, i := range arr {
-		_, present := set[i]
-
-		if !present {
-			set[i] = struct{}{}
-			unique = append(unique, i)
-		}
-	}
-
-	sort.Ints(unique)
-
-	return unique
 }
 
 func nextNode(node *Node, char rune) *Node {
