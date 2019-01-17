@@ -81,3 +81,17 @@ func TestMoveToSuffix(t *testing.T) {
 func TestMoveToSuffixTwice(t *testing.T) {
 	verify(t, []string{"abxb", "bxb", "xa"}, []int{2})
 }
+
+func TestWikipediaExample(t *testing.T) {
+	// From https://en.wikipedia.org/wiki/Aho%E2%80%93Corasick_algorithm
+
+	res := Search(
+		"abccab",
+		"a", "ab", "bab", "bc", "bca", "c", "caa")
+
+	expected := []int{0, 1, 2, 3, 4}
+
+	if !compare(res, expected) {
+		t.Errorf("Got result %d expected %d", res, expected)
+	}
+}
