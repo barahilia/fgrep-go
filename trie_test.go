@@ -24,7 +24,7 @@ func TestChildren(t *testing.T) {
 }
 
 func TestEmptyWordTrie(t *testing.T) {
-	trie := BuildTrie("")
+	trie := buildTrie("")
 
 	if len(trie.children) != 0 {
 		t.Fail()
@@ -32,7 +32,7 @@ func TestEmptyWordTrie(t *testing.T) {
 }
 
 func TestSingleWordTrie(t *testing.T) {
-	trie := BuildTrie("abc")
+	trie := buildTrie("abc")
 
 	for _, char := range "abc" {
 		if len(trie.children) != 1 {
@@ -52,7 +52,7 @@ func isEmptyNode(node *Node) bool {
 }
 
 func TestMultipleWords(t *testing.T) {
-	trie := BuildTrie("a", "cba", "cbx", "abc")
+	trie := buildTrie("a", "cba", "cbx", "abc")
 
 	// a -> b -> c
 	// c -> b -> a
@@ -71,7 +71,7 @@ func TestMultipleWords(t *testing.T) {
 func TestWikipediaTrie(t *testing.T) {
 	// From https://en.wikipedia.org/wiki/Aho%E2%80%93Corasick_algorithm
 
-	trie := BuildTrie("a", "ab", "bab", "bc", "bca", "c", "caa")
+	trie := buildTrie("a", "ab", "bab", "bc", "bca", "c", "caa")
 
 	correct := (
 		isEmptyNode(trie.children['a'].children['b']) &&
@@ -87,8 +87,7 @@ func TestWikipediaTrie(t *testing.T) {
 }
 
 func TestSuffixTwoLetters(t *testing.T) {
-	trie := BuildTrie("ab", "b")
-	AddSuffixes(trie)
+	trie := compile("ab", "b")
 
 	bNode := trie.children['b']
 	aNode := trie.children['a']
@@ -105,11 +104,9 @@ func TestSuffixTwoLetters(t *testing.T) {
 }
 
 func TestSuffixDeep(t *testing.T) {
-	trie := BuildTrie("abcd", "xyzabc", "abx")
-	AddSuffixes(trie)
+	trie := compile("abcd", "xyzabc", "abx")
 
 	abcNode := trie.children['a'].children['b'].children['c']
-
 	xyzNode := trie.children['x'].children['y'].children['z']
 	deepNode := xyzNode.children['a'].children['b'].children['c']
 
@@ -131,8 +128,7 @@ func getNode(trie *Node, s string) *Node {
 func TestWikipediaSuffix(t *testing.T) {
 	// From https://en.wikipedia.org/wiki/Aho%E2%80%93Corasick_algorithm
 
-	trie := BuildTrie("a", "ab", "bab", "bc", "bca", "c", "caa")
-	AddSuffixes(trie)
+	trie := compile("a", "ab", "bab", "bc", "bca", "c", "caa")
 
 	verifySuffix := func (s string, suffix string) {
 		node := getNode(trie, s)

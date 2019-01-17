@@ -21,7 +21,7 @@ func initNode() *Node {
 }
 
 // BuildTrie builds a Trie data structure
-func BuildTrie(words ...string) *Node {
+func buildTrie(words ...string) *Node {
 	root := initNode()
 
 	for _, word := range words {
@@ -67,7 +67,7 @@ func addSuffixesInside(trie *Node, current *Node) {
 
 
 // AddSuffixes pointer to the longest strict suffix branch from every node
-func AddSuffixes(trie *Node) {
+func addSuffixes(trie *Node) {
 	for _, child := range trie.children {
 		child.suffix = trie
 	}
@@ -94,7 +94,7 @@ func addDictionarySuffixesInside(current *Node) {
 }
 
 // AddDictionarySuffixes pointer to the largest suffix in dictionary
-func AddDictionarySuffixes(trie *Node) {
+func addDictionarySuffixes(trie *Node) {
 	for _, child := range trie.children {
 		child.dictionarySuffix = nil
 		addDictionarySuffixesInside(child)
@@ -103,10 +103,10 @@ func AddDictionarySuffixes(trie *Node) {
 
 // Compile words into a Aho-Corasick trie with suffixes links
 func compile(words ...string) *Node {
-	trie := BuildTrie(words...)
+	trie := buildTrie(words...)
 
-	AddSuffixes(trie)
-	AddDictionarySuffixes(trie)
+	addSuffixes(trie)
+	addDictionarySuffixes(trie)
 
 	return trie
 }
