@@ -124,11 +124,18 @@ func nextNode(node *Node, char rune) *Node {
 	}
 }
 
-// Search words positions in text with Aho-Corasick
-func Search(text string, words ...string) []int {
+// Match is returned by Search for words in text
+type Match struct {
+	word string
+	start int
+	end int
+}
+
+// Search for words in text with Aho-Corasick
+func Search(text string, words ...string) []Match {
 	trie := compile(words...)
 
-	matches := []int{}
+	matches := []Match{}
 	node := trie
 
 	for position, char := range text {
@@ -141,30 +148,26 @@ func Search(text string, words ...string) []int {
 
 		// Current node
 		if node.inDictionary {
-			matches = append(matches, position - node.depth + 1)
+			start := position - node.depth + 1
+			end := position + 1
+
+			match := Match{text[start: end], start, end}
+			matches = append(matches, match)
 		}
 
 		// Dictionary suffixes
 		for suffix := node.dictionarySuffix; suffix != nil; {
-			matches = append(matches, position - suffix.depth + 1)
+			start := position - suffix.depth + 1
+			end := position + 1
+
+			match := Match{text[start: end], start, end}
+			matches = append(matches, match)
+
 			suffix = suffix.dictionarySuffix
 		}
 	}
 
-	return sortedUnique(matches)
-}
-
-// Match is returned by Search for words in text
-type Match struct {
-	word string
-	start int
-	end int
-}
-
-// Search2 works like Search but return matches instead of positions
-func Search2(text string, words ...string) []Match {
-	matches := [1]Match{ Match{"b", 1, 2} }
-	return matches[:]
+	return matches
 }
 
 func main() {
