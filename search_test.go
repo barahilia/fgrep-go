@@ -95,3 +95,12 @@ func TestWikipediaExample(t *testing.T) {
 		t.Errorf("Got result %d expected %d", res, expected)
 	}
 }
+
+func TestSearch2Interface(t *testing.T) {
+	res := Search2("abc", "b")
+	expected := Match{"b", 1, 2}
+
+	if len(res) != 1 || res[0] != expected {
+		t.Fail()
+	}
+}

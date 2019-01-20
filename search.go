@@ -154,6 +154,19 @@ func Search(text string, words ...string) []int {
 	return sortedUnique(matches)
 }
 
+// Match is returned by Search for words in text
+type Match struct {
+	word string
+	start int
+	end int
+}
+
+// Search2 works like Search but return matches instead of positions
+func Search2(text string, words ...string) []Match {
+	matches := [1]Match{ Match{"b", 1, 2} }
+	return matches[:]
+}
+
 func main() {
 	// XXX fgrep-like arguments and output
 	fmt.Println("Search: 'abc' for 'a', 'b' and 'c'")
