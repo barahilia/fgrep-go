@@ -138,6 +138,11 @@ func Search(text string, words ...string) []Match {
 	matches := []Match{}
 	node := trie
 
+	addMatch := func (start, end int) {
+		match := Match{text[start: end], start, end}
+		matches = append(matches, match)
+	}
+
 	for position, char := range text {
 		node = nextNode(node, char)
 
@@ -148,21 +153,12 @@ func Search(text string, words ...string) []Match {
 
 		// Current node
 		if node.inDictionary {
-			start := position - node.depth + 1
-			end := position + 1
-
-			match := Match{text[start: end], start, end}
-			matches = append(matches, match)
+			addMatch(position - node.depth + 1, position + 1)
 		}
 
 		// Dictionary suffixes
 		for suffix := node.dictionarySuffix; suffix != nil; {
-			start := position - suffix.depth + 1
-			end := position + 1
-
-			match := Match{text[start: end], start, end}
-			matches = append(matches, match)
-
+			addMatch(position - suffix.depth + 1, position + 1)
 			suffix = suffix.dictionarySuffix
 		}
 	}
