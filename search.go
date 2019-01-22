@@ -18,7 +18,7 @@ func newNode(depth int) *Node {
 	}
 }
 
-// BuildTrie builds a Trie data structure
+// buildTrie builds a Trie data structure
 func buildTrie(words ...string) *Node {
 	root := newNode(0)
 
@@ -42,7 +42,8 @@ func buildTrie(words ...string) *Node {
 	return root
 }
 
-func addSuffixesInside(trie *Node, current *Node) {
+// addSuffixes pointer to the longest strict suffix branch from every node
+func addSuffixes(trie *Node, current *Node) {
 	for char, child := range current.children {
 		suffix, present := current.suffix.children[char]
 
@@ -58,23 +59,12 @@ func addSuffixesInside(trie *Node, current *Node) {
 			}
 		}
 
-		addSuffixesInside(trie, child)
+		addSuffixes(trie, child)
 	}
 }
 
-
-// AddSuffixes pointer to the longest strict suffix branch from every node
-func addSuffixes(trie *Node) {
-	for _, child := range trie.children {
-		child.suffix = trie
-	}
-
-	for _, child := range trie.children {
-		addSuffixesInside(trie, child)
-	}
-}
-
-func addDictionarySuffixesInside(current *Node) {
+// addDictionarySuffixes pointer to the largest suffix in dictionary
+func addDictionarySuffixes(current *Node) {
 	for _, child := range current.children {
 		next := child.suffix
 
@@ -86,24 +76,23 @@ func addDictionarySuffixesInside(current *Node) {
 			next = next.suffix
 		}
 
-		addDictionarySuffixesInside(child)
+		addDictionarySuffixes(child)
 	}
 }
 
-// AddDictionarySuffixes pointer to the largest suffix in dictionary
-func addDictionarySuffixes(trie *Node) {
-	for _, child := range trie.children {
-		child.dictionarySuffix = nil
-		addDictionarySuffixesInside(child)
-	}
-}
-
-// Compile words into a Aho-Corasick trie with suffixes links
+// compile words into a Aho-Corasick trie with suffixes links
 func compile(words ...string) *Node {
 	trie := buildTrie(words...)
 
-	addSuffixes(trie)
-	addDictionarySuffixes(trie)
+	for _, child := range trie.children {
+		child.suffix = trie
+		addSuffixes(trie, child)
+	}
+
+	for _, child := range trie.children {
+		child.dictionarySuffix = nil
+		addDictionarySuffixes(child)
+	}
 
 	return trie
 }
