@@ -131,17 +131,12 @@ type Match struct {
 	end int
 }
 
-// Search for words in text with Aho-Corasick
-func Search(text string, words ...string) []Match {
-	trie := compile(words...)
+func newMatch(text string, start int, end int) Match {
+	return Match{text[start: end], start, end}
+}
 
-	matches := []Match{}
+func searchImpl(text string, trie *Node, matches chan<- Match) {
 	node := trie
-
-	addMatch := func (start, end int) {
-		match := Match{text[start: end], start, end}
-		matches = append(matches, match)
-	}
 
 	for position, char := range text {
 		node = nextNode(node, char)
@@ -151,19 +146,33 @@ func Search(text string, words ...string) []Match {
 			continue
 		}
 
-		// Current node
 		if node.inDictionary {
-			addMatch(position - node.depth + 1, position + 1)
+			matches <- newMatch(text, position - node.depth + 1, position + 1)
 		}
 
-		// Dictionary suffixes
 		for suffix := node.dictionarySuffix; suffix != nil; {
-			addMatch(position - suffix.depth + 1, position + 1)
+			matches <- newMatch(text, position - suffix.depth + 1, position + 1)
 			suffix = suffix.dictionarySuffix
 		}
 	}
 
-	return matches
+	close(matches)
+}
+
+// Search for words in text with Aho-Corasick
+func Search(text string, words ...string) []Match {
+	trie := compile(words...)
+
+	result := []Match{}
+	matches := make(chan Match)
+
+	go searchImpl(text, trie, matches)
+
+	for match := range matches {
+		result = append(result, match)
+	}
+
+	return result
 }
 
 func main() {
