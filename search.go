@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 // Node of Trie data structure
 type Node struct {
 	children map[rune]*Node
@@ -162,12 +160,4 @@ func Search(text string, words ...string) []Match {
 	}
 
 	return result
-}
-
-func main() {
-	// XXX fgrep-like arguments and output
-	fmt.Println("Search: 'abc' for 'a', 'b' and 'c'")
-
-	res := Search("abc", "a", "b", "c")
-	fmt.Println("Result:", res)
 }
